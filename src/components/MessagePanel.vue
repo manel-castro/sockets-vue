@@ -43,6 +43,9 @@ export default {
     isValid() {
       return this.input.length > 0
     }
+  },
+  created() {
+    console.log('user. ', this.user)
   }
 }
 </script>

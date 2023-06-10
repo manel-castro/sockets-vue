@@ -97,6 +97,7 @@ io.on("connection", (socket) => {
       to,
     };
     socket.to(to).to(socket.userID).emit("private message", message);
+    messageStore.saveMessage(message);
   });
 
   socket.on("disconnect", () => {
