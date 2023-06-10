@@ -1,6 +1,6 @@
 <template>
   <div>
-    // status icon here (user connected)
+    <!-- // status icon here (user connected) -->
 
     <ul>
       <li v-for="(message, index) in user.messages" :key="index">
@@ -33,6 +33,15 @@ export default {
       return (
         index === 0 || this.user.messages[index - 1].fromSelf !== this.user.messages[index].fromSelf
       )
+    },
+    onSubmit() {
+      this.$emit('input', this.input)
+      this.input = ''
+    }
+  },
+  computed: {
+    isValid() {
+      return this.input.length > 0
     }
   }
 }

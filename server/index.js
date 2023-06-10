@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+const { InMemorySessionStore } = require("./sessionStore");
 const httpServer = require("http").createServer();
 const io = require("socket.io")(httpServer, {
   cors: {
@@ -5,24 +7,65 @@ const io = require("socket.io")(httpServer, {
   },
 });
 
+const sessionStore = new InMemorySessionStore();
+
+const randomId = () => crypto.randomBytes(8).toString("hex");
+
 io.use((socket, next) => {
+  const sessionID = socket.handshake.auth.sessionID;
+
+  if (sessionID) {
+    const session = sessionStore.findSession(sessionID);
+    if (session) {
+      socket.sessionID = sessionID;
+      socket.userID = session.userID;
+      socket.username = session.username;
+      return next();
+    }
+  }
+
   const username = socket.handshake.auth.username;
 
   if (!username) {
     return next(new Error("invalid username"));
   }
+
+  socket.sessionID = randomId();
+  socket.userID = randomId();
   socket.username = username;
   next();
 });
 
 io.on("connection", (socket) => {
+  // Persist session:
+  sessionStore.saveSession(socket.sessionID, {
+    userID: socket.userID,
+    username: socket.username,
+    connected: true,
+  });
+
+  // Emit session details for restoring it from localstorage
+  socket.emit("session", {
+    sessionID: socket.sessionID,
+    userID: socket.userID,
+  });
+
+  // Join to the "userID" room
+  // userID is public
+  socket.join(socket.userID);
+
+  // Fetch existing users
   const users = [];
-  for (let [id, socket] of io.of("/").sockets) {
+
+  const sessions = sessionStore.findAllSession();
+  sessions.forEach((session) => {
     users.push({
-      userID: id,
-      username: socket.username,
+      userID: session.userID,
+      username: session.username,
+      connected: session.connected,
     });
-  }
+  });
+
   socket.emit("users", users);
 
   socket.broadcast.emit("user connected", {
