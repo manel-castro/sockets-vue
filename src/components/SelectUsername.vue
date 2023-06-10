@@ -1,13 +1,13 @@
 <template>
-  <div>
+  <div class="select-username">
     <form @submit.prevent="onSubmit">
-      <input v-model="username" placeholder="Your username..." type="text" />
+      <input v-model="username" placeholder="Your username..." />
       <button :disabled="!isValid">Send</button>
     </form>
   </div>
 </template>
 
-<script lang="ts">
+<script>
 export default {
   name: 'SelectUsername',
   data() {
@@ -22,10 +22,16 @@ export default {
   },
   methods: {
     onSubmit() {
-      this.$emit('input', this.username)
+      console.log('submitting')
+      this.$emit('inputText', this.username)
     }
   }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.select-username {
+  width: 300px;
+  margin: 200px auto 0;
+}
+</style>

@@ -1,19 +1,19 @@
-<script setup lang="ts"></script>
-
 <template>
-  <main>
-    Hello world
-    <select-username @input="onUsernameSelection" />
-  </main>
+  <div id="app">
+    <select-username v-if="!usernameAlreadySelected" @inputText="onUsernameSelection" />
+    <chat v-else />
+  </div>
 </template>
 
-<script lang="ts">
+<script>
 import SelectUsername from '../components/SelectUsername.vue'
+import Chat from '../components/Chat.vue'
 import socket from '../socket'
 
 export default {
   name: 'App',
   components: {
+    Chat,
     SelectUsername
   },
   data() {
@@ -22,26 +22,54 @@ export default {
     }
   },
   methods: {
-    onUsernameSelection(username: string) {
+    onUsernameSelection(username) {
       this.usernameAlreadySelected = true
       socket.auth = { username }
       socket.connect()
-      socket.on('connect', () => {
-        console.log('connected')
-      })
-      console.log(username)
     }
   },
   created() {
-    console.log('component created')
+    const sessionID = localStorage.getItem('sessionID')
+
+    if (sessionID) {
+      this.usernameAlreadySelected = true
+      socket.auth = { sessionID }
+      socket.connect()
+    }
+
+    socket.on('session', ({ sessionID, userID }) => {
+      // attach the session ID to the next reconnection attempts
+      socket.auth = { sessionID }
+      // store it in the localStorage
+      localStorage.setItem('sessionID', sessionID)
+      // save the ID of the user
+      socket.userID = userID
+    })
+
     socket.on('connect_error', (err) => {
       if (err.message === 'invalid username') {
         this.usernameAlreadySelected = false
       }
     })
   },
-  unmounted() {
+  destroyed() {
     socket.off('connect_error')
   }
 }
 </script>
+
+<style>
+body {
+  margin: 0;
+}
+
+@font-face {
+  font-family: Lato;
+  src: '~/public/fonts/Lato-Regular.ttf';
+}
+
+#app {
+  font-family: Lato, Arial, sans-serif;
+  font-size: 14px;
+}
+</style>

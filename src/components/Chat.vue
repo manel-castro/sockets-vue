@@ -9,16 +9,24 @@
         @select="onSelectUser(user)"
       />
     </div>
+    <message-panel
+      v-if="selectedUser"
+      :user="selectedUser"
+      @input="onMessage"
+      class="right-panel"
+    />
   </div>
 </template>
 
 <script lang="ts">
+import MessagePanel from './messagePanel.vue'
 import User from './User.vue'
 
 export default {
   name: 'Chat',
   components: {
-    User
+    User,
+    MessagePanel
   },
   data() {
     return {
