@@ -1,5 +1,7 @@
 const crypto = require("crypto");
 const { InMemorySessionStore } = require("./sessionStore");
+const { InMemoryMessageStore } = require("./messageStore");
+
 const httpServer = require("http").createServer();
 const io = require("socket.io")(httpServer, {
   cors: {
@@ -8,6 +10,7 @@ const io = require("socket.io")(httpServer, {
 });
 
 const sessionStore = new InMemorySessionStore();
+const messageStore = new InMemoryMessageStore();
 
 const randomId = () => crypto.randomBytes(8).toString("hex");
 
@@ -58,12 +61,25 @@ io.on("connection", (socket) => {
   const users = [];
 
   const sessions = sessionStore.findAllSession();
+  const messages = messageStore.findMessagesForUser(socket.userID);
+
+  const messagesPerUser = new Map();
+  messages.forEach((message) => {
+    const { from, to } = message;
+    const otherUser = socket.userID === from ? to : from;
+    if (messagesPerUser.has(otherUser)) {
+      messagesPerUser.get(otherUser).push(message);
+    } else {
+      messagesPerUser.set(otherUser, [message]);
+    }
+  });
+
   sessions.forEach((session) => {
     users.push({
       userID: session.userID,
       username: session.username,
       connected: session.connected,
-      messages: [],
+      messages: messagesPerUser.get(session.userID) || [],
     });
   });
 
