@@ -12,7 +12,7 @@
     <message-panel
       v-if="selectedUser"
       :user="selectedUser"
-      @input="onMessage"
+      @textInput="onMessage"
       class="right-panel"
     />
   </div>
@@ -95,6 +95,25 @@ export default {
         if (a.username < b.username) return -1
         return a.username > b.username ? 1 : 0
       })
+    })
+
+    socket.on('private message', ({ content, from, to }) => {
+      for (let i = 0; i < this.users.length; i++) {
+        const user = this.users[i]
+        console.log('private message rceived', user)
+        const fromSelf = socket.userID === from
+        if (user.userID === (fromSelf ? to : from)) {
+          console.log('user found')
+          user.messages.push({
+            content,
+            fromSelf
+          })
+          if (user !== this.selectedUser) {
+            user.hasNewMessages = true
+          }
+          break
+        }
+      }
     })
   }
 }

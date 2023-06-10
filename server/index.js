@@ -63,6 +63,7 @@ io.on("connection", (socket) => {
       userID: session.userID,
       username: session.username,
       connected: session.connected,
+      messages: [],
     });
   });
 
@@ -74,10 +75,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("private message", ({ content, to }) => {
-    socket.to(to).emit("private message", {
+    const message = {
       content,
-      from: socket.id,
-    });
+      from: socket.userID,
+      to,
+    };
+    socket.to(to).to(socket.userID).emit("private message", message);
   });
 
   socket.on("disconnect", () => {
