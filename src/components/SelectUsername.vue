@@ -1,10 +1,8 @@
 <template>
-  <div class="select-username">
-    <form @submit.prevent="onSubmit">
-      <input v-model="username" placeholder="Your username..." />
-      <button :disabled="!isValid">Send</button>
-    </form>
-  </div>
+  <form @submit.prevent="onSubmit">
+    <input v-model="username" placeholder="Type your username..." />
+    <button :disabled="!isValid">Select</button>
+  </form>
 </template>
 
 <script>
@@ -17,21 +15,15 @@ export default {
   },
   computed: {
     isValid() {
-      return this.username.length > 2
+      return this.username.length > 3
     }
   },
   methods: {
     onSubmit() {
-      console.log('submitting')
-      this.$emit('inputText', this.username)
+      this.$emit('selectUsername', this.username)
     }
   }
 }
 </script>
 
-<style scoped>
-.select-username {
-  width: 300px;
-  margin: 200px auto 0;
-}
-</style>
+<style></style>

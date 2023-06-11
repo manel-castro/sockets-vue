@@ -12,5 +12,6 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest'
   },
-  ignorePatterns: ['/server']
+  ignorePatterns: ['/server'],
+  rules: { 'vue/multi-word-component-names': 'off' }
 }
