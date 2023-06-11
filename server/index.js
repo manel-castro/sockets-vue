@@ -14,6 +14,10 @@ const messageStore = new InMemoryMessageStore();
 
 const randomId = () => crypto.randomBytes(8).toString("hex");
 
+io.use(async (socket, next) => {});
+
+io.on("connection", async (socket) => {});
+
 const PORT = process.env.PORT || 3000;
 
 httpServer.listen(PORT, () =>

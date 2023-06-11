@@ -8,6 +8,7 @@
 <script>
 import Chat from '../components/Chat.vue'
 import SelectUsername from '../components/SelectUsername.vue'
+import socket from '../socket'
 export default {
   name: 'App',
   components: { SelectUsername, Chat },
@@ -16,8 +17,19 @@ export default {
   },
   methods: {
     onSelectUsername(username) {
-      this.usernameAlreadySelected = true
+      socket.auth = { username }
+      socket.connect()
     }
+  },
+  created() {
+    socket.on('connect', (err) => {
+      this.usernameAlreadySelected = true
+    })
+    socket.on('connect_error', (err) => {
+      if (err.message === 'invalid username') {
+        this.usernameAlreadySelected = false
+      }
+    })
   }
 }
 </script>
