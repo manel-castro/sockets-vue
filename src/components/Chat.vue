@@ -97,6 +97,29 @@ export default {
       })
     })
 
+    socket.on('user connected', (user) => {
+      console.log('userconnected: ', user)
+      for (let i = 0; i < this.users.length; i++) {
+        const existingUser = this.users[i]
+        console.log('existingUser: ', existingUser)
+        if (existingUser.userID === user.userID) {
+          existingUser.connected = true
+          return
+        }
+      }
+      initReactiveProperties(user)
+      this.users.push(user)
+    })
+    socket.on('user disconnected', (id) => {
+      for (let i = 0; i < this.users.length; i++) {
+        const existingUser = this.users[i]
+        if (existingUser.userID === id) {
+          existingUser.connected = false
+          return
+        }
+      }
+    })
+
     socket.on('private message', ({ content, from, to }) => {
       for (let i = 0; i < this.users.length; i++) {
         const user = this.users[i]
@@ -115,6 +138,14 @@ export default {
         }
       }
     })
+  },
+  unmounted() {
+    socket.off('connect')
+    socket.off('disconnect')
+    socket.off('users')
+    socket.off('user connected')
+    socket.off('user disconnected')
+    socket.off('private message')
   }
 }
 </script>

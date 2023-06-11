@@ -20,6 +20,7 @@ io.use((socket, next) => {
   if (sessionID) {
     const session = sessionStore.findSession(sessionID);
     if (session) {
+      console.log("session found: ", session);
       socket.sessionID = sessionID;
       socket.userID = session.userID;
       socket.username = session.username;
@@ -86,8 +87,10 @@ io.on("connection", (socket) => {
   socket.emit("users", users);
 
   socket.broadcast.emit("user connected", {
-    userID: socket.id,
+    userID: socket.userID,
     username: socket.username,
+    connected: true,
+    messages: [],
   });
 
   socket.on("private message", ({ content, to }) => {
@@ -101,7 +104,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    socket.broadcast.emit("user disconnected", socket.id);
+    console.log("disconected");
+    socket.broadcast.emit("user disconnected", socket.userID);
   });
 });
 
