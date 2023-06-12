@@ -15,17 +15,17 @@ import socket from '../socket';
 import User from './User.vue';
 export default {
   name: 'Chat',
+  props: {
+    users: Object,
+  },
   components: { User },
   data() {
     return {
-      users: [],
       selectedUser: null,
     };
   },
   created() {
-    socket.on('users', (users) => {
-      this.users = users;
-    });
+    console.log('created');
   },
 };
 </script>

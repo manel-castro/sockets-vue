@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <select-username @selectUsername="onSelectUsername" v-if="!usernameAlreadySelected" />
-    <chat v-else />
+    <chat v-else :users="this.users" />
   </div>
 </template>
 
@@ -15,6 +15,7 @@ export default {
   data() {
     return {
       usernameAlreadySelected: false,
+      users: [],
     };
   },
   methods: {
@@ -47,6 +48,10 @@ export default {
       if (err.message === 'invalid username') {
         this.usernameAlreadySelected = false;
       }
+    });
+    socket.on('users', (users) => {
+      console.log('users:', users);
+      this.users = users;
     });
   },
 };
