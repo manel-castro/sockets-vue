@@ -11,17 +11,23 @@
 </template>
 
 <script>
-import User from './User.vue'
+import socket from '../socket';
+import User from './User.vue';
 export default {
   name: 'Chat',
   components: { User },
   data() {
     return {
       users: [],
-      selectedUser: null
-    }
-  }
-}
+      selectedUser: null,
+    };
+  },
+  created() {
+    socket.on('users', (users) => {
+      this.users = users;
+    });
+  },
+};
 </script>
 <style scoped>
 .left-panel {

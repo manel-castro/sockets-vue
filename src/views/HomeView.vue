@@ -6,32 +6,50 @@
 </template>
 
 <script>
-import Chat from '../components/Chat.vue'
-import SelectUsername from '../components/SelectUsername.vue'
-import socket from '../socket'
+import Chat from '../components/Chat.vue';
+import SelectUsername from '../components/SelectUsername.vue';
+import socket from '../socket';
 export default {
   name: 'App',
   components: { SelectUsername, Chat },
   data() {
-    return { usernameAlreadySelected: false }
+    return {
+      usernameAlreadySelected: false,
+    };
   },
   methods: {
     onSelectUsername(username) {
-      socket.auth = { username }
-      socket.connect()
-    }
+      socket.auth = { username };
+      socket.connect();
+    },
   },
   created() {
-    socket.on('connect', (err) => {
-      this.usernameAlreadySelected = true
-    })
+    const sessionID = localStorage.getItem('session');
+    if (sessionID) {
+      console.log('sesionID exists', sessionID);
+      socket.auth = { sessionID };
+      socket.connect();
+    }
+
+    socket.on('connect', () => {
+      console.log('connected');
+      this.usernameAlreadySelected = true;
+    });
+    socket.on('session', ({ sessionID, userID }) => {
+      console.log('emited session: ', sessionID, userID);
+      this.usernameAlreadySelected = true;
+      localStorage.setItem('session', sessionID);
+      socket.auth = { sessionID };
+      socket.userID = userID;
+    });
+
     socket.on('connect_error', (err) => {
       if (err.message === 'invalid username') {
-        this.usernameAlreadySelected = false
+        this.usernameAlreadySelected = false;
       }
-    })
-  }
-}
+    });
+  },
+};
 </script>
 
 <style>
