@@ -1,33 +1,36 @@
 <template>
   <div>
-    <div>{{ user.username }}</div>
+    <div :style="{ display: 'flex' }">
+      {{ user.username }}
+      <div v-if="user.self">&nbsp;(yourself)</div>
+    </div>
     <div><status-icon :connected="user.connected" />{{ status }}</div>
   </div>
 </template>
 
 <script>
-import StatusIcon from './StatusIcon.vue'
+import StatusIcon from './StatusIcon.vue';
 
 export default {
   name: 'User',
   components: {
-    StatusIcon
+    StatusIcon,
   },
   props: {
     user: Object,
-    selected: Boolean
+    selected: Boolean,
   },
   methods: {
     onClick() {
-      this.$emit('select')
-    }
+      this.$emit('select');
+    },
   },
   computed: {
     status() {
-      return this.user.connected ? 'online' : 'offline'
-    }
-  }
-}
+      return this.user.connected ? 'online' : 'offline';
+    },
+  },
+};
 </script>
 
 <style></style>

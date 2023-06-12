@@ -55,6 +55,12 @@ io.on("connection", async (socket) => {
 
   const users = sessionStore.findAllSession();
   socket.emit("users", users);
+
+  socket.broadcast.emit("user connected", session);
+
+  socket.on("disconnect", async () => {
+    socket.broadcast.emit("user disconnected", socket.userID);
+  });
 });
 
 const PORT = process.env.PORT || 3000;

@@ -51,7 +51,29 @@ export default {
     });
     socket.on('users', (users) => {
       console.log('users:', users);
+
       this.users = users;
+
+      users.forEach((user) => {
+        if (user.userID === socket.userID) {
+          console.log('self is true');
+          user.connected = true;
+          user.self = true;
+        }
+      });
+    });
+    socket.on('user connected', (user) => {
+      const existingUser = this.users.find((_user) => user.userID === _user.userID);
+      if (!existingUser) {
+        this.users.push(user);
+      } else {
+        existingUser.connected = true;
+      }
+    });
+    socket.on('user disconnected', (userID) => {
+      const existingUser = this.users.find((_user) => userID === _user.userID);
+
+      existingUser.connected = false;
     });
   },
 };
