@@ -53,10 +53,44 @@ io.on("connection", async (socket) => {
     sessionID: socket.sessionID,
   });
 
-  const users = sessionStore.findAllSession();
+  const sessions = sessionStore.findAllSession();
+
+  // Organize messages per conversation
+  const users = [];
+  const messages = messageStore.findMessagesForUser(socket.userID);
+
+  const messagesPerUser = new Map();
+  messages.forEach((message) => {
+    // We only want to organize by the other users, not by "yourself"
+    const otherUser =
+      message.from === socket.userID ? message.to : message.from;
+    if (messagesPerUser.has(otherUser)) {
+      messagesPerUser.get(otherUser).push(message);
+    } else {
+      messagesPerUser.set(otherUser, [message]);
+    }
+  });
+
+  sessions.forEach((session) => {
+    users.push({
+      ...session,
+      messages: messagesPerUser.get(socket.userID) || [],
+    });
+  });
+
   socket.emit("users", users);
 
   socket.broadcast.emit("user connected", session);
+
+  socket.on("private message", ({ content, to }) => {
+    const message = {
+      content,
+      from: socket.userID,
+      to,
+    };
+    socket.to(to).to(socket.userID).emit("private message", message);
+    messageStore.saveMessage(message);
+  });
 
   socket.on("disconnect", async () => {
     socket.broadcast.emit("user disconnected", socket.userID);
