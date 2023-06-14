@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div :style="{ display: 'flex' }">
+  <div @click="onClick">
+    <div :style="{ display: 'flex' }" :class="{ selected: selected }">
       {{ user.username }}
       <div v-if="user.self">&nbsp;(yourself)</div>
     </div>
@@ -33,4 +33,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.selected {
+  background: red;
+}
+</style>

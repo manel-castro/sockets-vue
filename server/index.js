@@ -41,6 +41,8 @@ io.use(async (socket, next) => {
 });
 
 io.on("connection", async (socket) => {
+  socket.join(socket.userID);
+
   const session = {
     username: socket.username,
     userID: socket.userID,
@@ -82,13 +84,14 @@ io.on("connection", async (socket) => {
 
   socket.broadcast.emit("user connected", session);
 
-  socket.on("private message", ({ content, to }) => {
+  socket.on("private message", async ({ content, to }) => {
     const message = {
       content,
       from: socket.userID,
       to,
     };
-    socket.to(to).to(socket.userID).emit("private message", message);
+    console.log("message: ", message);
+    await socket.to(to).to(socket.userID).emit("private message", message);
     messageStore.saveMessage(message);
   });
 
