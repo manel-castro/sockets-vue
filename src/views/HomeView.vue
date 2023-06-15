@@ -51,14 +51,20 @@ export default {
     });
     socket.on('users', (users) => {
       console.log('users:', users);
+
       users.forEach((user) => {
+        user.messages.forEach((message) => {
+          console.log('dbg01 message: ', message);
+          const fromSelf = message.from === socket.userID;
+          message.self = fromSelf;
+        });
         if (user.userID === socket.userID) {
           console.log('self is true');
           user.connected = true;
           user.self = true;
-          user.messages = user.messages || [];
         }
       });
+      console.log('users:', users);
       this.users = users;
     });
     socket.on('private message', (message) => {
@@ -69,6 +75,7 @@ export default {
       const existingUser = this.users.find((_user) => _user.userID === conversationUser);
       existingUser.messages.push(message);
       existingUser.newMessages = true;
+      console.log('messages:', existingUser.messages);
     });
     socket.on('user connected', (user) => {
       const existingUser = this.users.find((_user) => user.userID === _user.userID);

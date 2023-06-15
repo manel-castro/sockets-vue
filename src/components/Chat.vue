@@ -45,7 +45,7 @@ export default {
         });
         this.selectedUser.messages.push({
           content,
-          fromSelf: true,
+          self: true,
         });
       }
     },
