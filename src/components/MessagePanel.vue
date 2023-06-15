@@ -1,7 +1,9 @@
 <template>
   <div>
     <div v-for="(message, index) in user.messages" :key="index">
-      <div>{{ this.user.username }} {{ message.self ? '(yourself)' : '' }}</div>
+      <div :style="{ display: 'flex', fontWeight: 'bold' }">
+        {{ this.user.username }} {{ message.self ? '(yourself)' : '' }}
+      </div>
 
       <div>{{ message.content }}</div>
     </div>

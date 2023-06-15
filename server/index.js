@@ -73,12 +73,16 @@ io.on("connection", async (socket) => {
     }
   });
 
+  console.log("messagesPerUser: ", messagesPerUser);
+
   sessions.forEach((session) => {
     users.push({
       ...session,
-      messages: messagesPerUser.get(socket.userID) || [],
+      messages: messagesPerUser.get(session.userID) || [],
     });
   });
+
+  console.log("users", users);
 
   socket.emit("users", users);
 
