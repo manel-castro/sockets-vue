@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-for="(message, index) in user.messages" :key="index">
-      <div :style="{ display: 'flex', fontWeight: 'bold' }">
+      <div v-if="shouldDisplay(message, index)" :style="{ display: 'flex', fontWeight: 'bold' }">
         {{ message.self ? '(yourself)' : this.user.username }}
       </div>
 
@@ -30,7 +30,11 @@ export default {
       this.$emit('sentMessage', this.message);
       this.message = '';
     },
+    shouldDisplay(message, index) {
+      return index === 0 || this.user.messages[index - 1].from !== this.user.messages[index].from;
+    },
   },
+  computed: {},
 };
 </script>
 
