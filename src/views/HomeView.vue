@@ -68,6 +68,7 @@ export default {
       const conversationUser = message.self ? message.to : message.from;
       const existingUser = this.users.find((_user) => _user.userID === conversationUser);
       existingUser.messages.push(message);
+      existingUser.newMessages = true;
     });
     socket.on('user connected', (user) => {
       const existingUser = this.users.find((_user) => user.userID === _user.userID);

@@ -1,10 +1,26 @@
 <template>
-  <div @click="onClick">
-    <div :style="{ display: 'flex' }" :class="{ selected: selected }">
-      {{ user.username }}
-      <div v-if="user.self">&nbsp;(yourself)</div>
+  <div :style="{ display: 'flex' }">
+    <div @click="onClick">
+      <div :style="{ display: 'flex' }" :class="{ selected: selected }">
+        {{ user.username }}
+        <div v-if="user.self">&nbsp;(yourself)</div>
+      </div>
+      <div><status-icon :connected="user.connected" />{{ status }}</div>
     </div>
-    <div><status-icon :connected="user.connected" />{{ status }}</div>
+    <div
+      :style="{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'red',
+        height: '20px',
+        width: '20px',
+        borderRadius: '4px',
+      }"
+      v-if="user.newMessages"
+    >
+      !
+    </div>
   </div>
 </template>
 

@@ -35,6 +35,7 @@ export default {
     onSelectUser(user) {
       console.log('selectedUser', user);
       this.selectedUser = user;
+      user.newMessages = false;
     },
     onMessage(content) {
       if (this.selectedUser) {
