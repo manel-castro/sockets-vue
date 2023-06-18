@@ -100,6 +100,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("disconnect", async () => {
+    console.log("disconnect");
     sessionStore.findSession(socket.sessionID).connected = false;
     socket.broadcast.emit("user disconnected", socket.userID);
   });
