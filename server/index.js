@@ -73,8 +73,6 @@ io.on("connection", async (socket) => {
     }
   });
 
-  console.log("messagesPerUser: ", messagesPerUser);
-
   sessions.forEach((session) => {
     users.push({
       ...session,
