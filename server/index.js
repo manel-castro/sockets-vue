@@ -16,10 +16,10 @@ const randomId = () => crypto.randomBytes(8).toString("hex");
 
 io.use(async (socket, next) => {
   const sessionID = socket.handshake.auth.sessionID;
-  console.log("sessionId: ", sessionID);
+
   if (sessionID) {
     const session = sessionStore.findSession(sessionID);
-    console.log("session: ", session);
+
     if (session) {
       socket.username = session.username;
       socket.userID = session.userID;
